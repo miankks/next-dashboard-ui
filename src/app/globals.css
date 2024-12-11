@@ -1,3 +1,8 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+.react-calender {
+    width: 100% !important;
+    border: none !important;
+}
