@@ -5,9 +5,11 @@ import { role, teachersData } from "@/lib/data"
 import FormModal from "@/components/FormModal"
 import Image from "next/image"
 import Link from "next/link"
+// import { Class, Subject, Teacher } from "@prisma/client"
+import prisma from "@/lib/prisma"
 
 type Teacher = {
-  id: number;
+  id: string;
   teacherId: string;
   name: string;
   email?: string
@@ -16,8 +18,9 @@ type Teacher = {
   subjects: string[];
   classes: string[];
   address: string
-
 }
+
+// type TeacherList = Teacher & {subjects: Subject[]} & {classes: Class[]};
 
 const columns = [
   {
@@ -43,39 +46,43 @@ const columns = [
   }
 ]
 
-const TeacherListpage = () => {
+// const renderRow = (item: TeacherList) => (
+  const renderRow = (item: Teacher) => (
+  <tr key={item.id} className="border-b border-gray-200 even:bg-slate-50 text-sm hover:bg-mianPurpleLight">
+    <td className="flex items-center gap-4 p-4">
+      <Image src={item.photo || '/noAvatar.png'} alt="" width={40} height={40} className="md:hidden xl:block w-10 h-10 rounded-full object-cover"/>
+      <div className="flex flex-col">
+        <h3 className="font-semibold">{item.name}</h3>
+        <p className="text-sm text-gray-500">{item?.email}</p>
+      </div>
+    </td>
+    {/* <td className="hidden md:table-cell">{item.username}</td> */}
+    <td className="hidden md:table-cell">{item.subjects.join(",")}</td>
+    <td className="hidden md:table-cell">{item.classes.join(",")}</td>
+    <td className="hidden md:table-cell">{item.phone}</td>
+    <td className="hidden lg:table-cell">{item.address}</td>
+    <td className="">
+      <div className="flex items-center gap-2">
+        <Link href={`/list/teachers/${item.id}`}>
+          <button className="w-7 h-7 flex items-center justify-center rounded-full bg-mianSky">
+            <Image src='/view.png' alt="" width={16} height={16}/>
+          </button>
+        </Link>
+        {role === "admin" && (
+        // <button className="w-7 h-7 flex items-center justify-center rounded-full bg-mianPurple">
+        //     <Image src='/delete.png' alt="" width={16} height={16}/>
+        // </button>
+        <FormModal table="teacher" type="delete" id={item.id}/>
+        )}
+      </div>
+    </td>
+  </tr>
+)
+// const TeacherListpage = async () => {
+  const TeacherListpage =  () => {
+  // const teachers = await prisma.teacher.findMany()
+  // console.log(teachers)
 
-  const renderRow = (item:Teacher) => (
-    <tr key={item.id} className="border-b border-gray-200 even:bg-slate-50 text-sm hover:bg-mianPurpleLight">
-      <td className="flex items-center gap-4 p-4">
-        <Image src={item.photo} alt="" width={40} height={40} className="md:hidden xl:block w-10 h-10 rounded-full object-cover"/>
-        <div className="flex flex-col">
-          <h3 className="font-semibold">{item.name}</h3>
-          <p className="text-sm text-gray-500">{item?.email}</p>
-        </div>
-      </td>
-      <td className="hidden md:table-cell">{item.teacherId}</td>
-      <td className="hidden md:table-cell">{item.subjects.join(",")}</td>
-      <td className="hidden md:table-cell">{item.classes.join(",")}</td>
-      <td className="hidden md:table-cell">{item.phone}</td>
-      <td className="hidden lg:table-cell">{item.address}</td>
-      <td className="">
-        <div className="flex items-center gap-2">
-          <Link href={`/list/teachers/${item.id}`}>
-            <button className="w-7 h-7 flex items-center justify-center rounded-full bg-mianSky">
-              <Image src='/view.png' alt="" width={16} height={16}/>
-            </button>
-          </Link>
-          {role === "admin" && (
-          // <button className="w-7 h-7 flex items-center justify-center rounded-full bg-mianPurple">
-          //     <Image src='/delete.png' alt="" width={16} height={16}/>
-          // </button>
-          <FormModal table="teacher" type="delete" id={item.id}/>
-          )}
-        </div>
-      </td>
-    </tr>
-  )
   return (
     <div className="bg-white p-4 rounded-md flex-1 m-4 mt-0">
       {/* TOP */}
